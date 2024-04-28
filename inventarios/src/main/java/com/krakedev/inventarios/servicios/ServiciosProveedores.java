@@ -11,9 +11,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+
 import com.krakedev.inventarios.bdd.ProveedoresBDD;
 import com.krakedev.inventarios.entidades.Proveedor;
 import com.krakedev.inventarios.excepciones.KrakedevDevException;
+
 
 
 
@@ -36,5 +38,21 @@ public class ServiciosProveedores {
 			 return Response.serverError().build();
 		}
 		
+	 }
+	
+	 @Path("crear")
+	 @POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	 public Response insertar(Proveedor proveedor) {
+		
+		 ProveedoresBDD cli=new ProveedoresBDD ();
+		 try {
+			 cli.insertar(proveedor);
+			return Response.ok().build();
+		} catch (KrakedevDevException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return Response.serverError().build();
+		}
 	 }
 }
