@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import com.krakedev.inventarios.entidades.Categoria;
 import com.krakedev.inventarios.entidades.Producto;
+import com.krakedev.inventarios.entidades.Proveedor;
 import com.krakedev.inventarios.entidades.TipoDocumento;
 import com.krakedev.inventarios.entidades.UnidadDeMedida;
 import com.krakedev.inventarios.excepciones.KrakedevDevException;
@@ -70,5 +71,39 @@ public class ProductoBDD {
 		}
 		
 		return productos;
+	}
+	
+	public void insertar(Producto producto) throws KrakedevDevException  {
+		Connection con=null;
+		String proceidmientoSql="INSERT INTO productos( nombre, codigo_udm, precio_venta, tiene_iva, coste, cod_categoria, stock)VALUES ( ?, ?, ?, ?, ?, ?, ?)";
+		try {
+			 con=ConexionBDD.obtenerConexion();
+			PreparedStatement ps=con.prepareStatement(proceidmientoSql);
+			ps.setString(1, producto.getNombre());
+			ps.setString(2, producto.getUnidadMedida().getNombre());
+			ps.setBigDecimal(3, producto.getPreciVenta());
+			ps.setBoolean(4, producto.isTieneIva());
+			ps.setBigDecimal(5, producto.getCoste());
+			ps.setInt(6, producto.getCategoria().getCodigo());
+			ps.setInt(7, producto.getStock());
+			
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new KrakedevDevException("Error al insertar Producto");
+		} catch (KrakedevDevException e) {
+			// TODO Auto-generated catch block
+			throw e;
+		}finally {
+			if (con!=null) {
+				try {
+					con.close()
+;
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}			}
+		}
 	}
 }
