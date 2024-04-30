@@ -73,4 +73,59 @@ public class PedidosBDD {
 				}			}
 		}
 	}
+	
+	
+	public void actuaizar(Pedido pedido) throws KrakedevDevException  {
+		Connection con=null;
+		ResultSet rsClave=null;
+		PreparedStatement ps=null;
+		PreparedStatement psDet=null;
+		String proceidmientoSql="UPDATE cabecera_pedido SET estado=? WHERE numero_pedido=?";
+		
+		int codigoCabecera=0;
+		Date fechaActual=new Date();
+		java.sql.Date fechaSQL=new java.sql.Date(fechaActual.getTime());
+		try {
+			 con=ConexionBDD.obtenerConexion();
+			 ps=con.prepareStatement(proceidmientoSql);
+			ps.setString(1, "R");
+			ps.setInt(2, pedido.getCodigo());
+			
+			ps.executeUpdate();
+			
+			
+			
+			
+			
+			ArrayList<DetallePedido>detallesPedido=pedido.getDetalles();
+			DetallePedido det;
+			for (int i = 0; i < detallesPedido.size(); i++) {
+				det=detallesPedido.get(i);
+				psDet=con.prepareStatement("UPDATE detalle_pedido SET cantidad_recibida=?,subtotal=? WHERE codigo=?");
+				psDet.setInt(1, det.getCantidadRecibida());
+				BigDecimal pv=det.getProducto().getPreciVenta();
+				BigDecimal cantidad=new BigDecimal(det.getCantidadRecibida());
+				BigDecimal subtotal=pv.multiply(cantidad);
+				psDet.setBigDecimal(2, subtotal);
+				psDet.setInt(3, det.getCodigo());
+				psDet.executeUpdate();
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new KrakedevDevException("Error al insertar Producto");
+		} catch (KrakedevDevException e) {
+			// TODO Auto-generated catch block
+			throw e;
+		}finally {
+			if (con!=null) {
+				try {
+					con.close()
+;
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}			}
+		}
+	}
 }
