@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.krakedev.inventarios.entidades.DetallePedido;
+import com.krakedev.inventarios.entidades.HistorialStock;
 import com.krakedev.inventarios.entidades.Pedido;
 import com.krakedev.inventarios.entidades.Producto;
 import com.krakedev.inventarios.excepciones.KrakedevDevException;
@@ -21,6 +22,7 @@ public class PedidosBDD {
 		ResultSet rsClave=null;
 		PreparedStatement ps=null;
 		PreparedStatement psDet=null;
+	
 		String proceidmientoSql="INSERT INTO cabecera_pedido(cod_proveedor, fecha, estado)VALUES ( ?, ?, ?);";
 		
 		int codigoCabecera=0;
@@ -54,6 +56,8 @@ public class PedidosBDD {
 				BigDecimal subtotal=pv.multiply(cantidad);
 				psDet.setBigDecimal(5, subtotal);
 				psDet.executeUpdate();
+				
+				
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -80,6 +84,7 @@ public class PedidosBDD {
 		ResultSet rsClave=null;
 		PreparedStatement ps=null;
 		PreparedStatement psDet=null;
+		HistorialStockBDD historialStockBDD=new HistorialStockBDD();
 		String proceidmientoSql="UPDATE cabecera_pedido SET estado=? WHERE numero_pedido=?";
 		
 		int codigoCabecera=0;
@@ -109,6 +114,12 @@ public class PedidosBDD {
 				psDet.setBigDecimal(2, subtotal);
 				psDet.setInt(3, det.getCodigo());
 				psDet.executeUpdate();
+				HistorialStock historialStock=new HistorialStock();
+				historialStock.setFecha(fechaActual);
+				historialStock.setReference("Pedido "+pedido.getCodigo());
+				historialStock.setProducto(det.getProducto());
+				historialStock.setCantidad(det.getCantidadRecibida());
+				historialStockBDD.insertar(historialStock);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
